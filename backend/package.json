@@ -12,12 +12,22 @@
   "dependencies": {
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "decompress": "^4.2.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
+    "extract-zip": "^2.0.1",
+    "fs": "0.0.1-security",
+    "gltf-pipeline": "^3.0.4",
     "jsonwebtoken": "^8.5.1",
+    "method-override": "^3.0.0",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.15",
-    "request": "^2.88.2"
+    "path": "^0.12.7",
+    "readdir": "^1.0.2",
+    "request": "^2.88.2",
+    "unzip": "^0.1.11"
   }
 }

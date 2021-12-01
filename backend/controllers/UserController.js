@@ -9,25 +9,30 @@ class UserController {
 		const username = req.body.username;
 		const password = crypto.createHash('sha256').update(String(req.body.password)).digest('base64');
 		db.connectDB()
-			.then((connection) => {
-				connection.query(
-					`SELECT * FROM users WHERE username = ${username} AND password = '${password}'`,
-					function (err, data) {
-						db.closeDB(connection);
-						if(data.length > 0) {
-							return controller.response(res, 200, { result: jwt.sign({
-								_id: data.id
-							}, 'token')})
-						} else {
-							return controller.response(res, 400, { result: `Login failed` })
-						}
+		.then((connection) => {
+			console.log(`SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`)
+			connection.query(
+				`SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`,
+				function (err, data) {
+					db.closeDB(connection);
+					if(data && data.length > 0) {
+						return controller.response( res, 200,
+							{ 
+								result: {
+									jwt: jwt.sign({_id: data.id}, 'token'),
+									id: data[0].id
+								}
+							})
+					} else {
+						return controller.response(res, 400, { result: `Login failed` })
 					}
-				);
-			})
-			.catch((error) => {
-				console.log('Db not connected successfully', error);
-				return controller.response(res, 400, { result: `Unable to connect to Database` })
-			});
+				}
+			);
+		})
+		.catch((error) => {
+			console.log(error)
+			return controller.response(res, 500, { result: `Unable to connect to Database` })
+		});
 	}
 
 	// register user function
@@ -35,22 +40,33 @@ class UserController {
 		const username = req.body.username;
 		const password = crypto.createHash('sha256').update(String(req.body.password)).digest('base64');
 		db.connectDB()
-			.then((connection) => {
-				connection.query(
-					`INSERT INTO users(username, password, name
-						 VALUES('${username}', '${password}', '')`,
-					function (err, data, fields) {
-						db.closeDB(connection);
-						return controller.response(res, 200, { result: `Save successfully` })
+		.then((connection) => {
+			connection.query(
+				`INSERT INTO users(username, password, name) VALUES('${username}', '${password}', '')`,
+				function (err, data) {
+					if(!data) {
+						return controller.response(res, 400, { result: `Register user failed` })
 					}
-				);
-			})
-			.catch((error) => {
-				console.log('Db not connected successfully', error);
-				return res
-					.status(200)
-					.json({ result: `Unable to connect to Database` });
-			});
+					db.closeDB(connection);
+					return controller.response(res, 200, { result: {
+						id: data.insertId
+					} })
+				}
+			);
+		})
+		.catch((error) => {
+			return controller.response(res, 500, { result: `Unable to connect to Database` })
+		});
+	}
+	// register user function
+	verifyToken(req, res) {
+		try {
+			jwt.verify(req.body.token, "token")
+			return controller.response(res, 200, { result: "Login successfuly"}) 
+
+		} catch (err) {
+			return controller.response(res, 400, { result: `Login failed` })
+		}
 	}
 }
 
