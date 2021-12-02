@@ -30,7 +30,7 @@
             <td>{{image.type}}</td>
             <td>
                <div class="action">
-                  <svg @click="downLoadImage(image.original_url)" width="20" height="20" fill="currentColor" class="bi bi-arrow-down-circle-fill" viewBox="0 0 16 16">
+                  <svg @click="downLoadImage(image.original_url, image.new_url, image.type)" width="20" height="20" fill="currentColor" class="bi bi-arrow-down-circle-fill" viewBox="0 0 16 16">
                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V4.5z"/>
                   </svg>
                   <svg @click="viewImages(image.new_url)"width="20" height="20" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
@@ -64,18 +64,27 @@ export default {
     },
   methods: {
       onFileChange(e) {
+         this.selectedFile = ""
          const selectedFile = e.target.files[0];
+         if(selectedFile.size > 20480000) {
+            if(confirm("file is over 20MB")){
+               return;
+            }
+         }
          this.selectedFile = selectedFile;
       },
       onUploadFile() {
          const formData = new FormData();
+         const typeFile = this.selectedFile.name.split('.')[1];
          formData.append("file", this.selectedFile);
-         let apiUrl = this.selectedFile.name.split('.')[1] == "glb" ?
+         this.selectedFile = ""
+         let apiUrl = typeFile == "glb" ?
          `http://localhost:3000/images/${this.$route.params.id}/convert/gltf` :
          `http://localhost:3000/images/${this.$route.params.id}/convert/glb`
          axios.post(apiUrl, formData)
          .then(async res => {
-            await this.getListImage();
+            this.selected = typeFile !==  "glb" ? "glb" : "gltf"
+            setTimeout(() => { this.getListImage(), 1000 });
          })
          .catch(err => {
             console.log(err);
@@ -95,8 +104,12 @@ export default {
       async viewImages(url) {
          this.$router.push({ name: 'Image3DView', query: { url: url } })
       },
-      async downLoadImage(url) {
-         window.location.href = `http://localhost:3000/user/${this.$route.params.id}/${url}`;
+      async downLoadImage(url, new_url, type) {
+         if(type = "gltf") {
+            window.location.href = `http://localhost:3000${new_url.replace("./images", "")}`;
+         } else {
+            window.location.href = `http://localhost:3000/user/${this.$route.params.id}/${url}`;
+         }
       },
       async getListImage () {
          this.nodata = false

@@ -103,10 +103,6 @@ export default {
         }
         return "";
     },
-    backToList() {
-      console.log("..x")
-      this.$router.push({ name: 'ListImages', params: { id: this.$route.params.id } })
-    }
   },
   mounted () {
     this.isLogged()
