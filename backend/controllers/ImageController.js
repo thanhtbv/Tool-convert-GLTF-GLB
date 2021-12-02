@@ -4,10 +4,9 @@ const fsExtra = require("fs-extra");
 const decompress = require("decompress");
 const db = require('../database');
 const controller = require('./controller');
-
 var imageFilePath = ""
 var imageFolderPath = ""
-
+var dateNowTime = ""
 class ImageController {
 	// get list images
 	list(req, res) {
@@ -54,14 +53,13 @@ class ImageController {
 			let file = ""
 			let filePath = ""
 			if (req.params.type == 'glb') {
-				imageController.catchFile(req, res, pathUserDefault).then(async data => {
+				imageController.catchFile(req, res).then(async data => {
 					await imageController.handleZipFile(data, pathUserDefault)
 					fileName = data.split(".")[0]
 					file = data
 				}).then(async () => {
 					filePath = pathUserDefault + fileName + "/"
 					await imageController.fromDir(filePath, '.gltf');
-					filePath
 				}).then(() => {
 					const options = {
 						resourceDirectory: filePath
@@ -79,29 +77,32 @@ class ImageController {
 							fileGlb,
 							userId,
 							fileGlbName,
-							'glb')
+							'glb'
+						)
 						imageController.resetImagesPath()
 						return controller.response(res, 200, { result: `Convert successfully` })
 					});
 				})
 			} else {
-				// imageController.catchFile(req, res, pathUserDefault).then(async data => {
-				// 	await imageController.fromDir(pathUserDefault, '.glb');
-				// }).then(async fromDirData => {
-				// 	const options = {
-				// 		resourceDirectory: imageFolderPath ? `./${imageFolderPath}/` : pathUserDefault
-				// 	};
-				// 	console.log(imageFilePath)
-				// 	const glbToGltf = gltfPipeline.glbToGltf;
-				// 	const glb = fsExtra.readFileSync(`./${imageFilePath}`);
-				// 	glbToGltf(glb, options).then(function (results) {
-				// 		const fileNameConverted = `./${imageFilePath.replace('.glb', '.gltf')}`
-				// 		fsExtra.writeJsonSync(fileNameConverted, results.gltf);
-				// 		imageController.save(imageFilePath, fileNameConverted, userId, 'gltf')
-				// 		imageController.resetImagesPath()
-				// 		return controller.response(res, 200, { result: `Convert successfully` })
-				// 	});
-				// })
+				imageController.catchFile(req, res, true).then(async data => {
+					filePath = pathUserDefault + dateNowTime + "/"
+					await imageController.fromDir(filePath, '.glb');
+					fileName = data.split(".")[0]
+					file = data
+				}).then(() => {
+					setTimeout(() => {
+						const glbToGltf = gltfPipeline.glbToGltf;
+						const glb = fsExtra.readFileSync(`./${imageFilePath}`);
+						glbToGltf(glb).then(function (results) {
+							const fileNameConverted = `./${imageFilePath.replace('.glb', '.gltf')}`
+							fsExtra.writeJsonSync(fileNameConverted, results.gltf);
+							let fileGltf = fileNameConverted.replace(/\\/g,'/')
+							imageController.save(file, fileGltf, userId, fileName + '.gltf', 'gltf')
+							imageController.resetImagesPath()
+							return controller.response(res, 200, { result: `Convert successfully` })
+						});
+					}, 1500);
+				})
 			}
 		} catch (error) {
 			console.log("error", error)
@@ -128,18 +129,33 @@ class ImageController {
 		});
 	}
 
-	// catch zip file
-	async catchFile(req, res) {
+	// catch and handle zip file
+	async catchFile(req, res, isGlb = false) {
+		let path = ""
 		if (!req.files) {
-			return res.status(500).send({ msg: "file is not found" })
+			return controller.response(res, 500, { result: `file is not found` })
 		}
 		const myFile = req.files.file;
-		const path = `./images/user/${req.params.id}/${myFile.name}`
-		const folder =  `./images/user/${req.params.id}`
-		if (!fsExtra.existsSync(folder)) {
-			fsExtra.mkdirSync(folder)
+		if(isGlb) {
+			const dateNow = new Date().getTime() / 1000;
+			dateNowTime = dateNow
+			const folder =  `./images/user/${req.params.id}/`
+			const folderGlb =  `./images/user/${req.params.id}/${dateNow}`
+			path = `./images/user/${req.params.id}/${dateNow}/${myFile.name}`
+			console.log(folder, folderGlb, new Date().getTime() / 1000)
+			if (!fsExtra.existsSync(folder)) {
+				fsExtra.mkdirSync(folder)
+			}
+			if (!fsExtra.existsSync(folderGlb)) {
+				fsExtra.mkdirSync(folderGlb)
+			}
+		} else {
+			path = `./images/user/${req.params.id}/${myFile.name}`
+			const folder =  `./images/user/${req.params.id}`
+			if (!fsExtra.existsSync(folder)) {
+				fsExtra.mkdirSync(folder)
+			}
 		}
-
 		myFile.mv(path, function (err) {
 			if (err) {
 				console.log(err)
