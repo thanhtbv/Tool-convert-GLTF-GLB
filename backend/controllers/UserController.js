@@ -10,7 +10,6 @@ class UserController {
 		const password = crypto.createHash('sha256').update(String(req.body.password)).digest('base64');
 		db.connectDB()
 		.then((connection) => {
-			console.log(`SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`)
 			connection.query(
 				`SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`,
 				function (err, data) {

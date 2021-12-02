@@ -15,7 +15,6 @@ class ImageController {
 		const type = req.params.type;
 		db.connectDB()
 		.then((connection) => {
-			console.log(`SELECT * FROM images WHERE user_id = ${userId} AND type = '${type}' AND is_deleted = 0`)
 			connection.query(
 				`SELECT * FROM images WHERE user_id = ${userId} AND type = '${type}' AND is_deleted = 0`,
 				function (err, data) {
@@ -51,21 +50,36 @@ class ImageController {
 			const imageController = new ImageController();
 			const userId = req.params.id
 			const pathUserDefault = `./images/user/${userId}/`
+			let fileName = ""
+			let file = ""
+			let filePath = ""
 			if (req.params.type == 'glb') {
 				imageController.catchFile(req, res, pathUserDefault).then(async data => {
 					await imageController.handleZipFile(data, pathUserDefault)
+					fileName = data.split(".")[0]
+					file = data
 				}).then(async () => {
-					await imageController.fromDir(pathUserDefault, '.gltf');
+					filePath = pathUserDefault + fileName + "/"
+					await imageController.fromDir(filePath, '.gltf');
+					filePath
 				}).then(() => {
 					const options = {
-						resourceDirectory: imageFolderPath ? `./${imageFolderPath}/` : pathUserDefault
+						resourceDirectory: filePath
 					};
 					const gltfToGlb = gltfPipeline.gltfToGlb;
 					const gltf = fsExtra.readJsonSync(`./${imageFilePath}`);
 					gltfToGlb(gltf, options).then(function (results) {
 						const fileNameConverted = `./${imageFilePath.replace('.gltf', '.glb')}`
 						fsExtra.writeFileSync(fileNameConverted, results.glb);
-						imageController.save(imageFilePath, fileNameConverted, userId, 'glb')
+						const fileGlb = fileNameConverted.replace(/\\/g,'/')
+						const fileGlbSplit = fileGlb.split("/")
+						const fileGlbName = fileGlbSplit[fileGlbSplit.length - 1]
+						imageController.save(
+							file,
+							fileGlb,
+							userId,
+							fileGlbName,
+							'glb')
 						imageController.resetImagesPath()
 						return controller.response(res, 200, { result: `Convert successfully` })
 					});
@@ -87,7 +101,6 @@ class ImageController {
 				// 		imageController.resetImagesPath()
 				// 		return controller.response(res, 200, { result: `Convert successfully` })
 				// 	});
-
 				// })
 			}
 		} catch (error) {
@@ -97,12 +110,12 @@ class ImageController {
 	}
 
 	// save image info
-	save(originalUrl, newUrl, userId, type) {
+	save(originalUrl, newUrl, userId, name, type) {
 		db.connectDB()
 		.then((connection) => {
 			connection.query(
-				`INSERT INTO images(user_id, original_url, new_url, type)
-				VALUES(${userId}, '${originalUrl}', '${newUrl}', '${type}')`,
+				`INSERT INTO images(user_id, original_url, new_url, name, type)
+				VALUES(${userId}, '${originalUrl}', '${newUrl}', '${name}', '${type}')`,
 				function (err, data, fields) {
 					db.closeDB(connection);
 					return;
@@ -133,13 +146,11 @@ class ImageController {
 				return res.status(500).send({ msg: "Error occured" });
 			}
 		});
-		console.log("1111")
 		return await Promise.resolve(myFile.name)
 	}
 
 	// Find path of file
 	async fromDir(pathUserDefault, filter) {
-		console.log("2222")
 		if (!fsExtra.existsSync(pathUserDefault)) {
 			return;
 		}
@@ -157,7 +168,7 @@ class ImageController {
 			else if (filename.indexOf(filter) >= 0) {
 				if (!imageFilePath) {
 					imageFilePath = filename;
-					return imageFilePath;
+					return await Promise.resolve(filename)
 				}
 			};
 		};
@@ -172,7 +183,6 @@ class ImageController {
 
 	// handle zip file
 	async handleZipFile(name, pathUserDefault) {
-		console.log("1,555")
 		await decompress(`${pathUserDefault}/${name}`, `${pathUserDefault}/${name.split(".")[0]}`);
 		return await Promise.resolve(true);
 	};
