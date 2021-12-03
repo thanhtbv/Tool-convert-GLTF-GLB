@@ -84,8 +84,8 @@ export default {
          formData.append("file", this.selectedFile);
          this.selectedFile = ""
          let apiUrl = typeFile == "glb" ?
-         `http://143.198.204.83/images/${this.$route.params.id}/convert/gltf` :
-         `http://143.198.204.83/images/${this.$route.params.id}/convert/glb`
+         `http://143.198.204.83:3000/images/${this.$route.params.id}/convert/gltf` :
+         `http://143.198.204.83:3000/images/${this.$route.params.id}/convert/glb`
          axios.post(apiUrl, formData)
          .then(async res => {
             this.selected = typeFile !==  "glb" ? "glb" : "gltf"
@@ -100,7 +100,7 @@ export default {
       },
       async deleteImages(id) {
          if(confirm("Do you really want to delete?")){
-            await axios.post(`http://143.198.204.83/images/delete/${id}`, {
+            await axios.post(`http://143.198.204.83:3000/images/delete/${id}`, {
                responseType: "json",
             })
             this.getListImage();
@@ -111,21 +111,21 @@ export default {
       },
       async downLoadImage(url, new_url, type) {
          if(type = "gltf") {
-            window.location.href = `http://143.198.204.83${new_url.replace("./images", "")}`;
+            window.location.href = `http://143.198.204.83:3000${new_url.replace("./images", "")}`;
          } else {
-            window.location.href = `http://143.198.204.83/user/${this.$route.params.id}/${url}`;
+            window.location.href = `http://143.198.204.83:3000/user/${this.$route.params.id}/${url}`;
          }
       },
       async getListImage () {
          this.nodata = false
-         this.images = await axios.get(`http://143.198.204.83/images/${this.$route.params.id}/${this.selected}`,)
+         this.images = await axios.get(`http://143.198.204.83:3000/images/${this.$route.params.id}/${this.selected}`,)
          if(!this.images.data.result || this.images.data.result.length == 0) {
             this.nodata = true
          }
       },
       async isLogged () {
          try {
-            const response = await axios.post('http://143.198.204.83/verify/token',
+            const response = await axios.post('http://143.198.204.83:3000/verify/token',
                {
                   token: this.getCookie("token"),
                })
