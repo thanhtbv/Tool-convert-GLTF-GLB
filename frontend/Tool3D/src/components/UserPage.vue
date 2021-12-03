@@ -17,16 +17,16 @@
                   <form class="form-group">
                      <input v-model="userLogin" type="text" class="form-control" placeholder="Username" required>
                      <input v-model="passwordLogin" type="password" class="form-control" placeholder="Password" required>
-                     <input type="submit" class="form-control btn btn-primary" @click="doLogin">
+                     <input type="submit" class="form-control btn btn-primary" @click.prevent="doLogin">
                      <p>Don't have an account? <a href="#" @click="registerActive = !registerActive,
                      isLoginFailed = false, invalidPassword = false, registerFailed = false, emptyFields = false">Sign up here</a>
                      </p>
                   </form>
                </div>
-               <div v-if="invalidPassword" class="alert alert-danger" role="alert">
+               <div v-if="invalidPassword && !registerFailed" class="alert alert-danger" role="alert">
                   Invalid password
                </div>
-               <div v-if="registerFailed" class="alert alert-danger" role="alert">
+               <div v-if="registerFailed && !invalidPassword" class="alert alert-danger" role="alert">
                   Register Failed
                </div>
                <div v-if="registerActive" class="card register" v-bind:class="{ error: emptyFields }">

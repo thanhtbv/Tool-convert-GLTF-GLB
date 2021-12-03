@@ -59,31 +59,35 @@ class ImageController {
 					await imageController.handleZipFile(data, pathUserDefault)
 					fileName = data.split(".")[0]
 					file = data
-				}).then(async () => {
-					filePath = pathUserDefault + fileName + "/"
-					await imageController.fromDir(filePath, '.gltf');
 				}).then(() => {
-					const options = {
-						resourceDirectory: filePath
-					};
-					const gltfToGlb = gltfPipeline.gltfToGlb;
-					const gltf = fsExtra.readJsonSync(`./${imageFilePath}`);
-					gltfToGlb(gltf, options).then(function (results) {
-						const fileNameConverted = `./${imageFilePath.replace('.gltf', '.glb')}`
-						fsExtra.writeFileSync(fileNameConverted, results.glb);
-						const fileGlb = fileNameConverted.replace(/\\/g,'/')
-						const fileGlbSplit = fileGlb.split("/")
-						const fileGlbName = fileGlbSplit[fileGlbSplit.length - 1]
-						imageController.save(
-							file,
-							fileGlb,
-							userId,
-							fileGlbName,
-							'glb'
-						)
-						imageController.resetImagesPath()
-						return controller.response(res, 200, { result: `Convert successfully` })
-					});
+					setTimeout(async() => {
+						filePath = pathUserDefault + fileName + "/"
+						await imageController.fromDir(filePath, '.gltf');
+					}, 1);
+				}).then(() => {
+					setTimeout(() => {
+						const options = {
+							resourceDirectory: filePath
+						};
+						const gltfToGlb = gltfPipeline.gltfToGlb;
+						const gltf = fsExtra.readJsonSync(`./${imageFilePath}`);
+						gltfToGlb(gltf, options).then(function (results) {
+							const fileNameConverted = `./${imageFilePath.replace('.gltf', '.glb')}`
+							fsExtra.writeFileSync(fileNameConverted, results.glb);
+							const fileGlb = fileNameConverted.replace(/\\/g,'/')
+							const fileGlbSplit = fileGlb.split("/")
+							const fileGlbName = fileGlbSplit[fileGlbSplit.length - 1]
+							imageController.save(
+								file,
+								fileGlb,
+								userId,
+								fileGlbName,
+								'glb'
+							)
+							imageController.resetImagesPath()
+							return controller.response(res, 200, { result: `Convert successfully` })
+						});
+					}, 1500);
 				})
 			} else {
 				imageController.catchFile(req, res, true).then(async data => {
