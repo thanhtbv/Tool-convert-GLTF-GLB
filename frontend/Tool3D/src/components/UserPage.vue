@@ -128,7 +128,6 @@ export default {
    }
 
    .login-page {
-      background-image: url('https://i.pinimg.com/originals/7d/76/82/7d76820d403884a5f83a77728bac08d3.jpg');
       align-items: center;
       display: flex;
       height: 100vh;

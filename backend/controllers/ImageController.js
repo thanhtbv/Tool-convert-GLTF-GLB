@@ -52,6 +52,8 @@ class ImageController {
 			let fileName = ""
 			let file = ""
 			let filePath = ""
+			imageFilePath = ""
+			imageFolderPath = ""
 			if (req.params.type == 'glb') {
 				imageController.catchFile(req, res).then(async data => {
 					await imageController.handleZipFile(data, pathUserDefault)
@@ -91,6 +93,7 @@ class ImageController {
 					file = data
 				}).then(() => {
 					setTimeout(() => {
+						console.log("imageFilePath", imageFilePath)
 						const glbToGltf = gltfPipeline.glbToGltf;
 						const glb = fsExtra.readFileSync(`./${imageFilePath}`);
 						glbToGltf(glb).then(function (results) {

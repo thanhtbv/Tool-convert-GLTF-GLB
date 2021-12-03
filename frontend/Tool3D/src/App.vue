@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" style="background-image: url('images/img-bg.jpg')">
     <router-view/>
   </div>
 </template>
@@ -17,7 +17,6 @@ body,
   padding: 0;
   height: 100%;
   width: 100%;
-  background-image: url('https://i.pinimg.com/originals/7d/76/82/7d76820d403884a5f83a77728bac08d3.jpg');
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
