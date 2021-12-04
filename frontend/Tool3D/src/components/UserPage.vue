@@ -35,7 +35,7 @@
                      <input v-model="userNameReg" type="text" class="form-control" placeholder="Username" required>
                      <input v-model="passwordReg" type="password" class="form-control" placeholder="Password" required>
                      <input v-model="confirmReg" type="password" class="form-control" placeholder="Confirm Password" required>
-                     <input type="submit" class="form-control btn btn-primary" @click="doRegister">
+                     <input type="submit" class="form-control btn btn-primary" @click.prevent="doRegister">
                      <p>Already have an account? <a href="#" @click="registerActive = !registerActive,
                      isLoginFailed = false, invalidPassword = false, registerFailed = false, emptyFields = false">Sign in here</a>
                      </p>

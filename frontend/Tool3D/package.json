@@ -11,12 +11,16 @@
     "webpack-defaults": "webpack-defaults"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/vue-fontawesome": "^2.0.6",
     "@vue/cli-service": "^4.5.15",
     "axios": "^0.24.0",
     "bootstrap-vue": "^2.21.2",
     "cli-service": "0.0.2",
     "core-js": "^3.6.4",
     "jquery": "^3.6.0",
+    "path": "^0.12.7",
     "stats.js": "^0.17.0",
     "three": "^0.135.0",
     "vue": "^2.5.2",

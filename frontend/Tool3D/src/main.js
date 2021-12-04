@@ -6,8 +6,12 @@ import router from './router'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'jquery/src/jquery.js'
 import 'bootstrap/dist/js/bootstrap.min.js'
-require('dotenv').config();
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faArrowCircleDown, faTrash, faEye } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+library.add(faArrowCircleDown, faTrash, faEye)
 
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
