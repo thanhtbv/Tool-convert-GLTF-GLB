@@ -1,3 +1,3 @@
-module.exports = {
+dodule.exports = {
     runtimeCompiler: true
 }

@@ -26,7 +26,7 @@ export default {
       this.container = this.$refs.sceneContainer
       this.stats = new Stats()
       this.container.appendChild(this.stats.dom)
-      const fov = 60
+      const fov = 30
       const aspect = this.container.clientWidth / this.container.clientHeight
       const near = 0.1
       const far = 30
@@ -34,7 +34,7 @@ export default {
       camera.position.set(0, 5, 10)
       this.camera = camera
       this.scene = new THREE.Scene()
-      this.scene.background = new THREE.Color('#17a2b8')
+      this.scene.background = new THREE.Color('black')
       const ambientLight = new THREE.HemisphereLight(
         0xffffff,
         0x222222,
