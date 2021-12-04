@@ -121,21 +121,21 @@ export default {
          if(isUploadedFile) {
             if(type == "glb") {
                let pathFile = path.dirname(new_url)
-               window.location.href = `http://localhost:3000${pathFile.replace("./images", "")}.zip`
+               window.location.href = `http://143.198.204.83:3000${pathFile.replace("./images", "")}.zip`
             } else {
                let pathFileGltf = new_url.replace("./images", "")
                let pathFileGltfConverted = pathFileGltf.replace(".gltf", ".glb")
-               window.location.href = `http://localhost:3000/${pathFileGltfConverted}`;
+               window.location.href = `http://143.198.204.83:3000/${pathFileGltfConverted}`;
             }
          } else {
-            window.location.href = `http://localhost:3000${new_url.replace("./images", "")}`;
+            window.location.href = `http://143.198.204.83:3000${new_url.replace("./images", "")}`;
          }
       },
       // Get list image
       getListImage () {
          return new Promise(async res => {
             this.nodata = false
-            this.images = await axios.get(`http://localhost:3000/images/${this.$route.params.id}/${this.selected}`)
+            this.images = await axios.get(`http://143.198.204.83:3000/images/${this.$route.params.id}/${this.selected}`)
             if(!this.images.data.result || this.images.data.result.length == 0) {
                this.nodata = true
             }
