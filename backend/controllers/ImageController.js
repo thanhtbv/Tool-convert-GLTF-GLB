@@ -7,6 +7,7 @@ const controller = require('./controller');
 var imageFilePath = ""
 var imageFolderPath = ""
 var dateNowTime = ""
+
 class ImageController {
 	// convert image function
 	async convert(req, res) {

@@ -1,15 +1,15 @@
 <template>
-<div class="container col-lg-8">
-   <div class="row">
-    <div class="col-sm-4">
-      <div class="form-group">
-      <select v-model="selected" class="form-control col-lg-12" @change="changeTypeImage()">
-         <option value="glb">GLB</option>
-         <option value="gltf">GLTF</option>
-      </select>
+   <div class="container col-lg-8">
+      <div class="row">
+      <div class="col-sm-4">
+         <div class="form-group">
+         <select v-model="selected" class="form-control col-lg-12" @change="changeTypeImage()">
+            <option value="glb">GLB</option>
+            <option value="gltf">GLTF</option>
+         </select>
+      </div>
    </div>
-    </div>
-    <div class="col-sm-8 file-upload">
+   <div class="col-sm-8 file-upload">
        <div>
          <input class="upload-button" type="file" @change="onFileChange" />
          <button @click="onUploadFile" class="upload-button"

@@ -57,6 +57,7 @@ class UserController {
 			return controller.response(res, 500, { result: `Unable to connect to Database` })
 		});
 	}
+
 	// register user function
 	verifyToken(req, res) {
 		try {
