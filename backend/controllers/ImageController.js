@@ -84,7 +84,42 @@ class ImageController {
 			return controller.response(res, 400, { result: `Convert failed` })
 		}
 	}
+  // count images of month
+  countAtMonth (req, res) {
+    const userId = req.params.id
+    db.connectDB()
+		.then((connection) => {
+			connection.query(
+        `SELECT COUNT(*) as count FROM images
+        WHERE user_id = ${userId} AND MONTH(DATE) = MONTH(CURRENT_TIMESTAMP) AND YEAR(DATE) = YEAR(CURRENT_TIMESTAMP)`,
+				function (err, data) {
+					db.closeDB(connection);
+					return controller.response( res, 200, { result: data })
+				}
+			);
+		})
+		.catch((error) => {
+			return controller.response(res, 500, { result: `Unable to connect to Database` })
+		});
+  }
 
+  // get count list images
+  count(req, res) {
+    const userId = req.params.id
+    db.connectDB()
+		.then((connection) => {
+			connection.query(
+				`SELECT COUNT(*) as count FROM images WHERE user_id = ${userId} AND is_deleted = 0`,
+				function (err, data) {
+					db.closeDB(connection);
+					return controller.response( res, 200, { result: data })
+				}
+			);
+		})
+		.catch((error) => {
+			return controller.response(res, 500, { result: `Unable to connect to Database` })
+		});
+  }
 	// get list images
 	list(req, res) {
 		const userId = req.params.id;

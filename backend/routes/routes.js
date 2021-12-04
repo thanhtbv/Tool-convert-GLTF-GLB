@@ -8,6 +8,8 @@ const router = app => {
 
   //route images
   app.get('/images/:id/:type', ImageController.list);
+  app.get('/count/:id', ImageController.count);
+  app.get('/countAtMonth/:id', ImageController.countAtMonth);
   app.post('/images/:id/convert/:type', ImageController.convert);
   app.post('/images/delete/:id', ImageController.delete);
 }

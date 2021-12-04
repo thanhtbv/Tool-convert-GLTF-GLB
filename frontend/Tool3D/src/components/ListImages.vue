@@ -13,7 +13,7 @@
        <div>
          <input class="upload-button" type="file" @change="onFileChange" />
          <button @click="onUploadFile" class="upload-button"
-         :disabled="!this.selectedFile"><b>Upload file</b></button>
+         :disabled="!this.selectedFile"><b>Convert</b></button>
       </div>
     </div>
   </div>
@@ -89,7 +89,20 @@ export default {
          }
       },
       //Updaload file zip
-      onUploadFile() {
+      async onUploadFile() {
+         const imageTotal = await axios.get(`${process.env.VUE_APP_ROOT_API}/count/${this.$route.params.id}`)
+         if (imageTotal.data.result && imageTotal.data.result[0] && imageTotal.data.result[0].count > 100) {
+            confirm("You have exceeded 100 images")
+            return;
+         }
+         const imageCountAtMonth = await axios.get(`${process.env.VUE_APP_ROOT_API}/countAtMonth/${this.$route.params.id}`)
+         if (imageCountAtMonth.data.result && imageCountAtMonth.data.result[0] && imageCountAtMonth.data.result[0].count > 20) {
+            confirm("You have exceeded 20 images on this month")
+            return;
+         }
+         if(!this.images.data.result || this.images.data.result.length == 0) {
+            this.nodata = true
+         }
          const formData = new FormData();
          const typeFile = this.selectedFile.name.split('.')[1];
          formData.append("file", this.selectedFile);
