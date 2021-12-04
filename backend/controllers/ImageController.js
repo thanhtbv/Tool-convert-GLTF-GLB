@@ -26,12 +26,15 @@ class ImageController {
 					file = data
 				}).then(async () => {
 					filePath = pathUserDefault + fileName + "/"
-					await imageController.fromDir(filePath, '.gltf');
+					await imageController.fromDir(filePath, '.gltf', res);
 				}).then(() => {
 					const options = {
 						resourceDirectory: filePath
 					};
 					const gltfToGlb = gltfPipeline.gltfToGlb;
+					if (!imageFilePath) {
+						return controller.response(res, 400, { result: `Convert failed` })
+					}
 					const gltf = fsExtra.readJsonSync(`./${imageFilePath}`);
 					gltfToGlb(gltf, options).then(async function (results) {
 						const fileNameConverted = `./${imageFilePath.replace('.gltf', '.glb')}`
@@ -55,12 +58,11 @@ class ImageController {
 			} else {
 				imageController.catchFile(req, res, true).then(async data => {
 					filePath = pathUserDefault + dateNowTime + "/"
-					await imageController.fromDir(filePath, '.glb');
+					await imageController.fromDir(filePath, '.glb', res);
 					fileName = data.split(".")[0]
 					file = data
 				}).then(() => {
 					setTimeout(() => {
-						console.log("imageFilePath", imageFilePath)
 						const glbToGltf = gltfPipeline.glbToGltf;
 						const glb = fsExtra.readFileSync(`./${imageFilePath}`);
 						glbToGltf(glb).then(async function (results) {
@@ -174,7 +176,7 @@ class ImageController {
 	}
 
 	// Find path of file
-	async fromDir(pathUserDefault, filter) {
+	async fromDir(pathUserDefault, filter, res) {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
 				if (!fsExtra.existsSync(pathUserDefault)) {
@@ -197,6 +199,9 @@ class ImageController {
 						}
 					};
 				};
+				if(!imageFilePath) {
+					return res.status(400).send({ msg: "Convert failed" });
+				}
 			}, 300);
 		});
 	};
@@ -210,8 +215,10 @@ class ImageController {
 	// handle zip file
 	async handleZipFile(name, pathUserDefault) {
 		return new Promise(async (resolve, reject) => {
-			await decompress(`${pathUserDefault}/${name}`, `${pathUserDefault}/${name.split(".")[0]}`);
-			resolve(true)
+			setTimeout(async () => {
+				await decompress(`${pathUserDefault}/${name}`, `${pathUserDefault}/${name.split(".")[0]}`);
+				resolve(true)
+			}, 1500)
 		})
 	};
 }

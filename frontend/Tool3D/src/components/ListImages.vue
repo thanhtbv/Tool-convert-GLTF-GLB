@@ -73,6 +73,13 @@ export default {
       onFileChange(e) {
          this.selectedFile = ""
          const selectedFile = e.target.files[0];
+         const fileTypeConverted = selectedFile.name.split(".")
+         const fileType = fileTypeConverted[fileTypeConverted.length - 1]
+         if (fileType != "glb" && fileType != "zip") {
+            if(confirm("Only glb file or zip of GLTF's zip file are supported")){
+               return;
+            }
+         }
          if(selectedFile.size > 20480000) {
             if(confirm("File cannot exceed 20MB")){
                return;
@@ -88,15 +95,15 @@ export default {
          formData.append("file", this.selectedFile);
          this.selectedFile = ""
          let apiUrl = typeFile == "glb" ?
-         `http://localhost:3000/images/${this.$route.params.id}/convert/gltf` :
-         `http://localhost:3000/images/${this.$route.params.id}/convert/glb`
+         `${process.env.VUE_APP_ROOT_API}/images/${this.$route.params.id}/convert/gltf` :
+         `${process.env.VUE_APP_ROOT_API}/images/${this.$route.params.id}/convert/glb`
          axios.post(apiUrl, formData)
          .then(async res => {
             this.selected = typeFile ==  "glb" ? "gltf" : "glb"
             await this.getListImage();
          })
          .catch(err => {
-            console.log(err);
+            confirm("Cannot convert this file")
          });
       },
       // Change list image by type
@@ -106,7 +113,7 @@ export default {
       // Delete image
       async deleteImages(id) {
          if(confirm("Do you really want to delete?")){
-            await axios.post(`http://localhost:3000/images/delete/${id}`, {
+            await axios.post(`${process.env.VUE_APP_ROOT_API}/images/delete/${id}`, {
                responseType: "json",
             })
             await this.getListImage();
@@ -121,21 +128,21 @@ export default {
          if(isUploadedFile) {
             if(type == "glb") {
                let pathFile = path.dirname(new_url)
-               window.location.href = `http://localhost:3000${pathFile.replace("./images", "")}.zip`
+               window.location.href = `${process.env.VUE_APP_ROOT_API}${pathFile.replace("./images", "")}.zip`
             } else {
                let pathFileGltf = new_url.replace("./images", "")
                let pathFileGltfConverted = pathFileGltf.replace(".gltf", ".glb")
-               window.location.href = `http://localhost:3000/${pathFileGltfConverted}`;
+               window.location.href = `${process.env.VUE_APP_ROOT_API}/${pathFileGltfConverted}`;
             }
          } else {
-            window.location.href = `http://localhost:3000${new_url.replace("./images", "")}`;
+            window.location.href = `${process.env.VUE_APP_ROOT_API}${new_url.replace("./images", "")}`;
          }
       },
       // Get list image
       getListImage () {
          return new Promise(async res => {
             this.nodata = false
-            this.images = await axios.get(`http://localhost:3000/images/${this.$route.params.id}/${this.selected}`)
+            this.images = await axios.get(`${process.env.VUE_APP_ROOT_API}/images/${this.$route.params.id}/${this.selected}`)
             if(!this.images.data.result || this.images.data.result.length == 0) {
                this.nodata = true
             }
@@ -145,7 +152,7 @@ export default {
       // Check user is logged or not
       async isLogged () {
          try {
-            const response = await axios.post('http://localhost:3000/verify/token',
+            const response = await axios.post(`${process.env.VUE_APP_ROOT_API}/verify/token`,
                {
                   token: this.getCookie("token"),
                })

@@ -63,7 +63,7 @@ export default {
 
       const loader = new GLTFLoader()
       loader.load(
-        `http://localhost:3000${this.$route.query.url.replace("./images", "")}`,
+        `${process.env.VUE_APP_ROOT_API}${this.$route.query.url.replace("./images", "")}`,
         gltf => {
           this.scene.add(gltf.scene)
         },
@@ -81,7 +81,7 @@ export default {
     },
     async isLogged () {
          try {
-            const response = await axios.post('http://localhost:3000/verify/token',
+            const response = await axios.post(`${process.env.VUE_APP_ROOT_API}/verify/token`,
                {
                   token: this.getCookie("token"),
                })

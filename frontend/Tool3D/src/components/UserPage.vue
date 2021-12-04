@@ -72,7 +72,7 @@ export default {
             this.emptyFields = true;
          } else {
             try {
-               const response = await axios.post('http://localhost:3000/login/', 
+               const response = await axios.post(`${process.env.VUE_APP_ROOT_API}/login/`, 
                {
                   username: this.userLogin,
                   password: this.passwordLogin
@@ -97,7 +97,7 @@ export default {
                return;
             }
             try {
-               const response = await axios.post('http://localhost:3000/register/', 
+               const response = await axios.post(`${process.env.VUE_APP_ROOT_API}/register/`, 
                {
                   username: this.userNameReg,
                   password: this.passwordReg
